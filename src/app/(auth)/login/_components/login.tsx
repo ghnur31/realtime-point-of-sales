@@ -1,7 +1,8 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,13 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldGroup,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+
+import FormInput from "@/components/common/form-input";
+
 import { INITIAL_LOGIN_FORM } from "@/constants/auth-constant";
 import { LoginForm, loginSchema } from "@/validations/auth-validation";
 
@@ -27,7 +24,6 @@ export default function Login() {
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
-    // TODO: Handle login logic here
     console.log("Login data:", data);
   });
 
@@ -37,51 +33,26 @@ export default function Login() {
         <CardTitle className="text-xl">Welcome</CardTitle>
         <CardDescription>Login to access all features</CardDescription>
       </CardHeader>
+
       <CardContent>
-        <form onSubmit={onSubmit}>
-          <FieldGroup>
-            <Controller
-              name="email"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    {...field}
-                    id="email"
-                    type="email"
-                    placeholder="Insert your email"
-                    autoComplete="off"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input
-                    {...field}
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    autoComplete="off"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-          <Button type="submit" className="w-full mt-6">
+        <form onSubmit={onSubmit} className="space-y-4">
+          <FormInput
+            form={form}
+            name="email"
+            label="Email"
+            placeholder="Insert email here"
+            type="email"
+          />
+
+          <FormInput
+            form={form}
+            name="password"
+            label="Password"
+            placeholder="******"
+            type="password"
+          />
+
+          <Button type="submit" className="w-full">
             Login
           </Button>
         </form>
