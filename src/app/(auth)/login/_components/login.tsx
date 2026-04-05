@@ -14,18 +14,44 @@ import {
 
 import FormInput from "@/components/common/form-input";
 
-import { INITIAL_LOGIN_FORM } from "@/constants/auth-constant";
-import { LoginForm, loginSchema } from "@/validations/auth-validation";
+import {
+  INITIAL_LOGIN_FORM,
+  INITIAL_STATE_LOGIN_FORM,
+} from "@/constants/auth-constant";
+import { LoginForm, loginSchemaForm } from "@/validations/auth-validation";
+import { startTransition, useActionState, useEffect } from "react";
+import { login } from "../actions";
+import { Loader2 } from "lucide-react";
 
 export default function Login() {
   const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchemaForm),
     defaultValues: INITIAL_LOGIN_FORM,
   });
 
+  const [loginState, loginAction, isPendingLogin] = useActionState(
+    login,
+    INITIAL_STATE_LOGIN_FORM,
+  );
+
   const onSubmit = form.handleSubmit(async (data) => {
-    console.log("Login data:", data);
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    startTransition(() => {
+      loginAction(formData);
+    });
   });
+
+  useEffect(() => {
+    if (loginState?.status === "error") {
+      startTransition(() => {
+        loginAction(null);
+      });
+    }
+  }, [loginState]);
 
   return (
     <Card>
@@ -53,7 +79,7 @@ export default function Login() {
           />
 
           <Button type="submit" className="w-full">
-            Login
+            {isPendingLogin ? <Loader2 className="animate-spin" /> : "Login"}
           </Button>
         </form>
       </CardContent>
